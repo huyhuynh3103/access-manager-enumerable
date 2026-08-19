@@ -59,12 +59,12 @@ abstract contract AccessManagerEnumerable is AccessManager {
 
     // ─── Hooks ───────────────────────────────────────────────────────────────
 
-    function _grantRole(
-        uint64 roleId,
-        address account,
-        uint32 grantDelay,
-        uint32 executionDelay
-    ) internal virtual override returns (bool) {
+    function _grantRole(uint64 roleId, address account, uint32 grantDelay, uint32 executionDelay)
+        internal
+        virtual
+        override
+        returns (bool)
+    {
         bool newMember = super._grantRole(roleId, account, grantDelay, executionDelay);
         if (newMember) {
             _roleMembers[roleId].add(account);
