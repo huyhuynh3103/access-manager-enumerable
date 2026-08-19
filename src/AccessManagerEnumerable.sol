@@ -3,6 +3,8 @@ pragma solidity ^0.8.20;
 
 import {AccessManager} from "@openzeppelin/contracts/access/manager/AccessManager.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IAccessManagerEnumerable} from "./IAccessManagerEnumerable.sol";
 
 /**
  * @dev Extension of {AccessManager} that adds enumerable views for role members
@@ -13,7 +15,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
  * WARNING: {getRoleMembers} and {getTargetFunctionSelectors} copy the full set to
  * memory. Query them off-chain or in view contexts only — they have unbounded gas cost.
  */
-abstract contract AccessManagerEnumerable is AccessManager {
+abstract contract AccessManagerEnumerable is IAccessManagerEnumerable, AccessManager {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
@@ -23,6 +25,11 @@ abstract contract AccessManagerEnumerable is AccessManager {
     // target => set of selectors that have been explicitly configured via setTargetFunctionRole
     // ponytail: selectors are never removed; role assignment can change but the selector stays configured
     mapping(address target => EnumerableSet.Bytes32Set) private _targetSelectors;
+
+    /// @inheritdoc IERC165
+    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+        return interfaceId == type(IAccessManagerEnumerable).interfaceId || interfaceId == type(IERC165).interfaceId;
+    }
 
     // ─── Role member enumeration ─────────────────────────────────────────────
 

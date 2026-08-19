@@ -3,6 +3,8 @@ pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
 import {AccessManager} from "@openzeppelin/contracts/access/manager/AccessManager.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IAccessManagerEnumerable} from "../src/IAccessManagerEnumerable.sol";
 import {AccessManagerEnumerable} from "../src/AccessManagerEnumerable.sol";
 
 // Concrete deployment target (abstract → concrete)
@@ -25,6 +27,20 @@ contract AccessManagerEnumerableTest is Test {
 
     function setUp() public {
         manager = new TestManager(admin);
+    }
+
+    // ── supportsInterface ─────────────────────────────────────────────────────
+
+    function test_SupportsIAccessManagerEnumerable() public view {
+        assertTrue(manager.supportsInterface(type(IAccessManagerEnumerable).interfaceId));
+    }
+
+    function test_SupportsIERC165() public view {
+        assertTrue(manager.supportsInterface(type(IERC165).interfaceId));
+    }
+
+    function test_DoesNotSupportRandomInterface() public view {
+        assertFalse(manager.supportsInterface(bytes4(keccak256("random()"))));
     }
 
     // ── Role member enumeration ───────────────────────────────────────────────
