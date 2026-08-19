@@ -33,14 +33,34 @@ abstract contract AccessManagerEnumerable is IAccessManagerEnumerable, AccessMan
 
     // ─── Role member enumeration ─────────────────────────────────────────────
 
+    /**
+     * @dev Returns the account at position `index` in the granted-members set for `roleId`.
+     *
+     * NOTE: Includes accounts whose grant delay has not yet elapsed. See {getRoleMembers}.
+     */
     function getRoleMember(uint64 roleId, uint256 index) public view returns (address) {
         return _roleMembers[roleId].at(index);
     }
 
+    /**
+     * @dev Returns the number of accounts that have been granted `roleId`.
+     *
+     * NOTE: Includes accounts whose grant delay has not yet elapsed. See {getRoleMembers}.
+     */
     function getRoleMemberCount(uint64 roleId) public view returns (uint256) {
         return _roleMembers[roleId].length();
     }
 
+    /**
+     * @dev Returns all accounts that have been granted `roleId`.
+     *
+     * NOTE: Includes accounts whose grant delay has not yet elapsed. Such accounts appear
+     * in this list but {hasRole} may return false for them until the delay passes. Always
+     * verify active membership with {hasRole} before acting on enumerated results.
+     *
+     * WARNING: This operation copies the entire set to memory and has unbounded gas cost.
+     * Only call from off-chain or view contexts.
+     */
     function getRoleMembers(uint64 roleId) public view returns (address[] memory) {
         return _roleMembers[roleId].values();
     }
@@ -55,6 +75,13 @@ abstract contract AccessManagerEnumerable is IAccessManagerEnumerable, AccessMan
         return _targetSelectors[target].length();
     }
 
+    /**
+     * @dev Returns all function selectors that have been explicitly configured via
+     * {setTargetFunctionRole} for `target`.
+     *
+     * WARNING: This operation copies the entire set to memory and has unbounded gas cost.
+     * Only call from off-chain or view contexts.
+     */
     function getTargetFunctionSelectors(address target) public view returns (bytes4[] memory) {
         bytes32[] memory raw = _targetSelectors[target].values();
         bytes4[] memory selectors = new bytes4[](raw.length);
